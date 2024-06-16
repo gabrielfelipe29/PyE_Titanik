@@ -133,5 +133,12 @@ histograma(lista_edades_segunda_clase, "Segunda clase", "Edades", "Cantidad" )
 # Hacemos el histograma para tercera
 histograma(lista_edades_tercera_clase, "Tercera clase", "Edades", "Cantidad" )
 
-# Todo
+# Todas las edades
 histograma(todo, "Todo", "Edades", "Cantidad" )
+
+# Intervalo de confianza del 95% para la edad promedio
+ic=stats.norm.interval(alpha=0.05, loc=dataframe['age'], scale=dataframe['age'])
+print("Intervalo de confianza: ")
+print(ic)
+
+
