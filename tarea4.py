@@ -137,8 +137,78 @@ histograma(lista_edades_tercera_clase, "Tercera clase", "Edades", "Cantidad" )
 histograma(todo, "Todo", "Edades", "Cantidad" )
 
 # Intervalo de confianza del 95% para la edad promedio
-ic=stats.norm.interval(alpha=0.05, loc=dataframe['age'], scale=dataframe['age'])
+# estaria bien esto o hay que usar stats.t.interval?
+ic_todos=stats.norm.interval(confidence=0.95, loc=dataframe['age'].mean(), scale=dataframe['age'].std())
 print("Intervalo de confianza: ")
-print(ic)
+print(ic_todos)
 
 
+# Ejercicio 2 - REVISAR
+# Prueba de hipotesis para las mujeres con 95% de confianza
+# H0: mu_mujeres=56
+# H1: mu_mujeres!=56
+
+print("Prueba de hipotesis edad mujeres:")
+t_statistic, p_value= stats.ttest_1samp(a=dataframe[dataframe['gender']=='female']['age'], popmean=56)
+
+print(f"T-Statistic: {t_statistic}")
+print(f"p-value: {p_value}")
+
+# T-Statistic: 0.7395675473549336
+# p-value: 0.4597453375122318
+# Como p-value=0.46 > alfa=0.05, no se rechaza H0.
+# El promedio de edades de las mujeres no difiere significativamente de los 56 años.
+
+
+# Prueba de hipotesis para los hombres con 95% de confianza
+# H0: mu_hombres=56
+# H1: mu_hombres!=56
+
+print("Prueba de hipotesis edad hombres:")
+
+t_statistic, p_value= stats.ttest_1samp(a=dataframe[dataframe['gender']=='male']['age'], popmean=56)
+
+print(f"T-Statistic: {t_statistic}")
+print(f"p-value: {p_value}")
+
+print(dataframe[dataframe['gender']=='male']['age'].mean())
+
+
+# Ejercicio 3 - Tasa de supervivencia de hombres y mujeres
+# 
+# H0: mu_hombres-mu_mujeres=0
+# H1: mu_hombres-mu_mujeres!=0
+
+print("Prueba de hipotesis edad hombres y mujeres:")
+
+ds_hombres=tasa_de_supervivencia_genero['male'].std()
+ds_mujeres=tasa_de_supervivencia_genero['female'].std()
+
+if((ds_hombres/ds_mujeres)>=2 or (ds_mujeres/ds_hombres)>=2):
+    var_equal=False
+
+t_statistic, p_value = stats.ttest_ind(a=dataframe[dataframe['gender']=='male']['age'], b=dataframe[dataframe['gender']=='female']['age'],equal_var=var_equal)
+print(f"T-Statistic: {t_statistic}")
+print(f"p-value: {p_value}")
+
+#stats.binomtest()
+
+
+
+
+# Ejercicio 4 - Edad de hombres y mujeres
+# 
+# H0: mu_hombres-mu_mujeres=0
+# H1: mu_hombres-mu_mujeres!=0
+
+print("Prueba de hipotesis edad hombres y mujeres:")
+
+ds_hombres=dataframe[dataframe['gender']=='male']['age'].std()
+ds_mujeres=dataframe[dataframe['gender']=='female']['age'].std()
+
+if((ds_hombres/ds_mujeres)>=2 or (ds_mujeres/ds_hombres)>=2):
+    var_equal=False
+
+t_statistic, p_value = stats.ttest_ind(a=dataframe[dataframe['gender']=='male']['age'], b=dataframe[dataframe['gender']=='female']['age'],equal_var=var_equal)
+print(f"T-Statistic: {t_statistic}")
+print(f"p-value: {p_value}")
