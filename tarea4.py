@@ -99,12 +99,10 @@ def histograma(datos, titulo, xlabel, ylabel):
 edades_supervivientes = dataframe[dataframe['survived'] == 1]['age'].dropna()  # Filtra por supervivientes y elimina NaN
 edades_no_supervivientes = dataframe[dataframe['survived'] == 0]['age'].dropna()  # Filtra por supervivientes y elimina NaN
 
-# No supervivientes
-#diagrama_caja([edades_supervivientes, edades_no_supervivientes], "Cajas supervivientes", "Categoría", "Edad")
+# Diagrama de cajas con los supervivientes y los no supervivientes
+diagrama_caja([edades_supervivientes, edades_no_supervivientes], "Cajas supervivientes", "Categoría", "Edad")
 
 
-
-#tasa_supervivencia_mujeres = survival_rate_by_gender['Female']  
 
 # Filtrar los registros donde la columna 'p_class' es igual a 1
 primera_clase = dataframe[dataframe['p_class'] == 1]['age']
@@ -179,9 +177,9 @@ ds_hombres=dataframe[(dataframe['gender'] == 'male')]
 
 ds_mujeres=dataframe[(dataframe['gender']== 'female')]
 
-#print(f"Tasas supervivencia H: {ds_hombres['survived'].mean()} y M {ds_mujeres['survived'].mean()}")
 
 t_statistic, p_value = stats.ttest_ind(a=ds_hombres['survived'], b=ds_mujeres['survived'], alternative="two-sided", equal_var=True)
+
 print(f"T-Statistic: {t_statistic}")
 print(f"p-value: {p_value}")
 
