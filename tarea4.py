@@ -2,6 +2,12 @@ from scipy import stats
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import warnings
+
+# Suprimir RuntimeWarning
+warnings.filterwarnings("ignore", message="Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.")
+
+
 
 dataframe = pd.read_csv('titanik.csv')
 
