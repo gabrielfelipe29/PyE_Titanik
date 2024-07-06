@@ -3,8 +3,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-# Formato datos: passenger_id,survived,p_class,title_name,full_name,gender,age,siblings,parents,embarked
-
 dataframe = pd.read_csv('titanik.csv')
 
 media_edades_por_genero = dataframe.groupby('gender')['age'].mean()
@@ -22,37 +20,33 @@ def completar_edades(row):
 dataframe['age'] = dataframe.apply(completar_edades, axis=1)
 
 
-
-print("\nDataFrame después de reemplazar los valores faltantes:")
-print(dataframe.head(20))
-
 moda = dataframe.groupby('gender')['age'].agg(lambda x: x.mode().iloc[0] if not x.mode().empty else None)
-print("Moda: ", moda)
+print("\nModa: ", moda)
 
 mediana = dataframe.groupby('gender')['age'].median()
-print("Mediana: ", mediana)
+print("\nMediana: ", mediana)
 
 maximo = dataframe.groupby('gender')['age'].max()
 minimo = dataframe.groupby('gender')['age'].min()
 
-print(f"Rango: {minimo} a {maximo}")
+print(f"\nRango:  {maximo - minimo}")
 
 desviacion_estandar=dataframe.groupby('gender')['age'].std()
-print(f"Desviación estándar: {desviacion_estandar}")
+print(f"\nDesviación estándar: {desviacion_estandar}")
 
 varianza= dataframe.groupby('gender')['age'].var()
-print(f"Varianza: {varianza}")
+print(f"\nVarianza: {varianza}")
 
 
 tasa_supervivencia_general = dataframe['survived'].mean()
-print(f"Tasa de supervivencia en general: {tasa_supervivencia_general:.2%}")
+print(f"\nTasa de supervivencia en general: {tasa_supervivencia_general:.2%}")
 
 # Calcular la tasa de supervivencia por género
 tasa_de_supervivencia_genero = dataframe.groupby('gender')['survived'].mean() * 100
-print("Tasa de supervivencia por género:")
+print("\nTasa de supervivencia por género:")
 print(tasa_de_supervivencia_genero)
 
-print("No sobrevivieron")
+print("\nNo sobrevivieron:")
 
 # Filtrar los registros donde la columna 'survived' es igual a 0
 survived_0 = dataframe[dataframe['survived'] == 0]
@@ -136,79 +130,132 @@ histograma(lista_edades_tercera_clase, "Tercera clase", "Edades", "Cantidad" )
 # Todas las edades
 histograma(todo, "Todo", "Edades", "Cantidad" )
 
-# Intervalo de confianza del 95% para la edad promedio
-# estaria bien esto o hay que usar stats.t.interval?
-ic_todos=stats.norm.interval(confidence=0.95, loc=dataframe['age'].mean(), scale=dataframe['age'].std())
-print("Intervalo de confianza: ")
+# Ejercicio 1 - Intervalo de confianza del 95% para la edad promedio
+ic_todos=stats.t.interval(confidence=0.05, loc=dataframe['age'].mean(), scale=dataframe['age'].std(), df=(len(dataframe) - 1))
+print("\nIntervalo de confianza t: ")
 print(ic_todos)
 
 
-# Ejercicio 2 - REVISAR
-# Prueba de hipotesis para las mujeres con 95% de confianza
+# Ejercicio 2 - Prueba de hipotesis para las mujeres con 95% de confianza
 # H0: mu_mujeres=56
-# H1: mu_mujeres!=56
+# H1: mu_mujeres>56
 
-print("Prueba de hipotesis edad mujeres:")
-t_statistic, p_value= stats.ttest_1samp(a=dataframe[dataframe['gender']=='female']['age'], popmean=56)
-
+print("\nPrueba de hipotesis edad mujeres:")
+t_statistic, p_value= stats.ttest_1samp(a=dataframe[dataframe['gender']=='female']['age'], popmean=56, alternative='greater')
 print(f"T-Statistic: {t_statistic}")
 print(f"p-value: {p_value}")
 
 # T-Statistic: 0.7395675473549336
-# p-value: 0.4597453375122318
-# Como p-value=0.46 > alfa=0.05, no se rechaza H0.
+# p-value: 0.2298726687561159
+# Como p-value=0.22 > alfa=0.05, no se rechaza H0.
 # El promedio de edades de las mujeres no difiere significativamente de los 56 años.
 
 
 # Prueba de hipotesis para los hombres con 95% de confianza
 # H0: mu_hombres=56
-# H1: mu_hombres!=56
+# H1: mu_hombres>56
 
-print("Prueba de hipotesis edad hombres:")
+print("\nPrueba de hipotesis edad hombres:")
 
-t_statistic, p_value= stats.ttest_1samp(a=dataframe[dataframe['gender']=='male']['age'], popmean=56)
+t_statistic, p_value= stats.ttest_1samp(a=dataframe[dataframe['gender']=='male']['age'], popmean=56, alternative='greater')
 
 print(f"T-Statistic: {t_statistic}")
 print(f"p-value: {p_value}")
 
-print(dataframe[dataframe['gender']=='male']['age'].mean())
+# T-Statistic: 3.1950677480438108
+# p-value: 0.0007215042458834663
+# como p-value=0.0007 < alfa=0.05, entonces se rechaza H0.
+# El promedio de edades de los hombres es mayor a 56 años
 
 
 # Ejercicio 3 - Tasa de supervivencia de hombres y mujeres
 # 
-# H0: mu_hombres-mu_mujeres=0
-# H1: mu_hombres-mu_mujeres!=0
+# H0: Tasa_hombres=Tasa_mujeres
+# H1: Tasa_hombres!=Tasa_mujeres
 
-print("Prueba de hipotesis edad hombres y mujeres:")
+print("\nPrueba de hipotesis tasa supervivencia hombres y mujeres:")
 
-ds_hombres=tasa_de_supervivencia_genero['male'].std()
-ds_mujeres=tasa_de_supervivencia_genero['female'].std()
+ds_hombres=dataframe[(dataframe['gender'] == 'male')]
 
-if((ds_hombres/ds_mujeres)>=2 or (ds_mujeres/ds_hombres)>=2):
-    var_equal=False
+ds_mujeres=dataframe[(dataframe['gender']== 'female')]
 
-t_statistic, p_value = stats.ttest_ind(a=dataframe[dataframe['gender']=='male']['age'], b=dataframe[dataframe['gender']=='female']['age'],equal_var=var_equal)
+#print(f"Tasas supervivencia H: {ds_hombres['survived'].mean()} y M {ds_mujeres['survived'].mean()}")
+
+t_statistic, p_value = stats.ttest_ind(a=ds_hombres['survived'], b=ds_mujeres['survived'], alternative="two-sided", equal_var=True)
 print(f"T-Statistic: {t_statistic}")
 print(f"p-value: {p_value}")
 
-#stats.binomtest()
+# T-Statistic: -6.8840586510873285
+# p-value: 7.849335669088787e-12
+# Como p-value=0.000000000007.8493 < alfa=0.01, se rechaza H0. Es decir, las tasas de supervivencia difieren significativamente.
+
+print("\nPrueba de hipotesis tasa supervivencia primera clase y segunda clase:")
+
+clase_1=dataframe[(dataframe['p_class'] == 1)]
+
+clase_2=dataframe[(dataframe['p_class'] == 2)]
+
+clase_3=dataframe[(dataframe['p_class'] == 3)]
 
 
+# H0: Tasa_primera=Tasa_segunda
+# H1: Tasa_primera!=Tasa_segunda
+
+t_statistic, p_value = stats.ttest_ind(a=clase_1['survived'], b=clase_2['survived'], alternative="two-sided", equal_var=True)
+print(f"T-Statistic: {t_statistic}")
+print(f"p-value: {p_value}")
+
+# T-Statistic: 26.691766153419707
+# p-value: 6.251096933708115e-123
+# Como p-value=6.251096933708115e-123 < alfa=0.01, entonces se rechaza H0.
+# Las tasas de supervivencia en primera y segunda clase difieren significativamente.
+
+
+print("\nPrueba de hipotesis tasa supervivencia primera clase y tercera clase:")
+
+# H0: Tasa_primera=Tasa_tercera
+# H1: Tasa_primera!=Tasa_tercera
+
+t_statistic, p_value = stats.ttest_ind(a=clase_1['survived'], b=clase_3['survived'], alternative="two-sided", equal_var=True)
+print(f"T-Statistic: {t_statistic}")
+print(f"p-value: {p_value}")
+
+# T-Statistic: 42.21076330438675
+# p-value: 9.026447143885264e-234
+# Como p-value=9.026447143885264e-234 < alfa=0.01, entonces se rechaza H0. 
+# Las tasas de supervivencia en primera y tercera clase difieren significativamente
+
+print("\nPrueba de hipotesis tasa supervivencia segunda clase y tercera clase:")
+
+# H0: Tasa_segunda=Tasa_tercera
+# H1: Tasa_segunda!=Tasa_tercera
+
+t_statistic, p_value = stats.ttest_ind(a=clase_2['survived'], b=clase_3['survived'], alternative="two-sided", equal_var=True)
+print(f"T-Statistic: {t_statistic}")
+print(f"p-value: {p_value}")
+
+# T-Statistic: 7.767761626497189
+# p-value: 1.4419985410591502e-14
+# Como p-value = 1.4419985410591502e-14 < alfa=0.01, entonces se rechaza H0.
+# Las tasas de supervivencia en segunda y tercera clase difieren significativamente
 
 
 # Ejercicio 4 - Edad de hombres y mujeres
 # 
-# H0: mu_hombres-mu_mujeres=0
-# H1: mu_hombres-mu_mujeres!=0
+# H0: Edad_mujeres=Edad_hombres
+# H1: Edad_mujeres<Edad_hombres
 
-print("Prueba de hipotesis edad hombres y mujeres:")
+print("\nPrueba de hipotesis edad hombres y mujeres:")
 
-ds_hombres=dataframe[dataframe['gender']=='male']['age'].std()
-ds_mujeres=dataframe[dataframe['gender']=='female']['age'].std()
+edad_hombres=dataframe[dataframe['gender']=='male']['age']
+edad_mujeres=dataframe[dataframe['gender']=='female']['age']
 
-if((ds_hombres/ds_mujeres)>=2 or (ds_mujeres/ds_hombres)>=2):
-    var_equal=False
-
-t_statistic, p_value = stats.ttest_ind(a=dataframe[dataframe['gender']=='male']['age'], b=dataframe[dataframe['gender']=='female']['age'],equal_var=var_equal)
+t_statistic, p_value = stats.ttest_ind(a=edad_mujeres, b=edad_hombres, equal_var=True, alternative='less')
 print(f"T-Statistic: {t_statistic}")
 print(f"p-value: {p_value}")
+
+# T-Statistic: -1.7051508685967423
+# p-value: 0.04416398359724209
+
+# Como p-value = 0.044 < alfa = 0.05, se rechaza H0.
+# Las mujeres son más jovenes que los hombres. 
