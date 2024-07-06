@@ -27,25 +27,30 @@ dataframe['age'] = dataframe.apply(completar_edades, axis=1)
 
 
 moda = dataframe.groupby('gender')['age'].agg(lambda x: x.mode().iloc[0] if not x.mode().empty else None)
-print("\nModa: ", moda)
+print("\nModa: ")
+print(moda)
 
 mediana = dataframe.groupby('gender')['age'].median()
-print("\nMediana: ", mediana)
+print("\nMediana: ")
+print(mediana)
 
 maximo = dataframe.groupby('gender')['age'].max()
 minimo = dataframe.groupby('gender')['age'].min()
 
-print(f"\nRango:  {maximo - minimo}")
+print("\nRango:")
+print(maximo - minimo)
 
 desviacion_estandar=dataframe.groupby('gender')['age'].std()
-print(f"\nDesviación estándar: {desviacion_estandar}")
+print(f"\nDesviación estándar: ")
+print(desviacion_estandar)
 
 varianza= dataframe.groupby('gender')['age'].var()
-print(f"\nVarianza: {varianza}")
-
+print(f"\nVarianza: ")
+print(varianza)
 
 tasa_supervivencia_general = dataframe['survived'].mean()
-print(f"\nTasa de supervivencia en general: {tasa_supervivencia_general:.2%}")
+print(f"\nTasa de supervivencia en general:")
+print(f"{tasa_supervivencia_general:.2%}")
 
 # Calcular la tasa de supervivencia por género
 tasa_de_supervivencia_genero = dataframe.groupby('gender')['survived'].mean() * 100
@@ -106,11 +111,8 @@ edades_supervivientes = dataframe[dataframe['survived'] == 1]['age'].dropna()  #
 edades_no_supervivientes = dataframe[dataframe['survived'] == 0]['age'].dropna()  # Filtra por supervivientes y elimina NaN
 
 # No supervivientes
-#diagrama_caja([edades_supervivientes, edades_no_supervivientes], "Cajas supervivientes", "Categoría", "Edad")
+diagrama_caja([edades_supervivientes, edades_no_supervivientes], "Cajas supervivientes", "Categoría", "Edad")
 
-
-
-#tasa_supervivencia_mujeres = survival_rate_by_gender['Female']  
 
 # Filtrar los registros donde la columna 'p_class' es igual a 1
 primera_clase = dataframe[dataframe['p_class'] == 1]['age']
@@ -179,7 +181,7 @@ print(f"p-value: {p_value}")
 # H0: Tasa_hombres=Tasa_mujeres
 # H1: Tasa_hombres!=Tasa_mujeres
 
-print("\nPrueba de hipotesis tasa supervivencia hombres y mujeres:")
+print("\nPrueba de hipotesis tasa supervivencia \nhombres y mujeres:")
 
 ds_hombres=dataframe[(dataframe['gender'] == 'male')]
 
@@ -195,7 +197,7 @@ print(f"p-value: {p_value}")
 # p-value: 7.849335669088787e-12
 # Como p-value=0.000000000007.8493 < alfa=0.01, se rechaza H0. Es decir, las tasas de supervivencia difieren significativamente.
 
-print("\nPrueba de hipotesis tasa supervivencia primera clase y segunda clase:")
+print("\nPrueba de hipotesis tasa supervivencia \nprimera clase y segunda clase:")
 
 clase_1=dataframe[(dataframe['p_class'] == 1)]
 
@@ -217,7 +219,7 @@ print(f"p-value: {p_value}")
 # Las tasas de supervivencia en primera y segunda clase difieren significativamente.
 
 
-print("\nPrueba de hipotesis tasa supervivencia primera clase y tercera clase:")
+print("\nPrueba de hipotesis tasa supervivencia \nprimera clase y tercera clase:")
 
 # H0: Tasa_primera=Tasa_tercera
 # H1: Tasa_primera!=Tasa_tercera
@@ -231,7 +233,7 @@ print(f"p-value: {p_value}")
 # Como p-value=9.026447143885264e-234 < alfa=0.01, entonces se rechaza H0. 
 # Las tasas de supervivencia en primera y tercera clase difieren significativamente
 
-print("\nPrueba de hipotesis tasa supervivencia segunda clase y tercera clase:")
+print("\nPrueba de hipotesis tasa supervivencia \nsegunda clase y tercera clase:")
 
 # H0: Tasa_segunda=Tasa_tercera
 # H1: Tasa_segunda!=Tasa_tercera
